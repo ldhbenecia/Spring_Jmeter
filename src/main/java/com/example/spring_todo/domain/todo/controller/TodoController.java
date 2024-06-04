@@ -39,4 +39,15 @@ public class TodoController {
         todoService.deleteTodo(id);
         return ResponseEntity.noContent().build();
     }
+
+    /**
+     * Redis 캐싱 사용 x
+     * @param id
+     */
+    @PostMapping("/api/{id}/like")
+    public ResponseEntity<Void> incrementLikesNoCaching(@PathVariable Long id) {
+        todoService.incrementLikesNoCaching(id);
+        return ResponseEntity.ok().build();
+    }
+
 }

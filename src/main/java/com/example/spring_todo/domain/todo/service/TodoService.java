@@ -66,4 +66,12 @@ public class TodoService {
         }
         todoRepository.deleteById(id);
     }
+
+    @Transactional
+    public void incrementLikesNoCaching(Long id) {
+        Todo todo = todoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Todo not found"));
+        todo.incrementLikes();
+        todoRepository.save(todo);
+    }
 }
