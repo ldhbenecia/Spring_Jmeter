@@ -32,9 +32,8 @@ public class JwtTokenProvider {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String createToken(String email, String nickname) {
+    public String createToken(String email) {
         Claims claims = Jwts.claims().setSubject(email);
-        claims.put("nickname", nickname);
         Date now = new Date();
         Date validity = new Date(now.getTime() + expiration);
 
@@ -68,9 +67,8 @@ public class JwtTokenProvider {
                 .getBody();
 
         String email = claims.getSubject();
-        String nickname = claims.get("nickname", String.class);
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-        return new UsernamePasswordAuthenticationToken(userDetails, nickname, userDetails.getAuthorities());
+        return new UsernamePasswordAuthenticationToken(userDetails, userDetails.getAuthorities());
     }
 }
