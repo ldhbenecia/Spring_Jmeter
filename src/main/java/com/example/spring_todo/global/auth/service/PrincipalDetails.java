@@ -9,7 +9,7 @@ import java.util.Collection;
 import java.util.List;
 
 @RequiredArgsConstructor
-public class PrincipleDetails implements UserDetails {
+public class PrincipalDetails implements UserDetails {
 
     private final User user;
 
@@ -26,5 +26,9 @@ public class PrincipleDetails implements UserDetails {
     @Override
     public String getUsername() {
         return user.getEmail();
+    }
+
+    public Long getId() {
+        return user.getId();
     }
 }
