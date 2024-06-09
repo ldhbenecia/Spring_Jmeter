@@ -36,7 +36,7 @@ public class Todo {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "todo")
+    @OneToMany(mappedBy = "todo", cascade = CascadeType.ALL)
     private List<TodoLike> todoLikes = new ArrayList<>();
 
     public void incrementLikes() {
