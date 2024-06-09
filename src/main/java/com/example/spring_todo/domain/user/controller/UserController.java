@@ -1,5 +1,7 @@
 package com.example.spring_todo.domain.user.controller;
 
+import com.example.spring_todo.domain.user.dto.UserLoginRequestDto;
+import com.example.spring_todo.domain.user.dto.UserLoginResponseDto;
 import com.example.spring_todo.domain.user.dto.UserSignUpRequestDto;
 import com.example.spring_todo.domain.user.dto.UserSignUpResponseDto;
 import com.example.spring_todo.domain.user.service.UserService;
@@ -20,5 +22,11 @@ public class UserController {
     public ResponseEntity<UserSignUpResponseDto> signUp(@RequestBody @Valid UserSignUpRequestDto requestDto) {
         UserSignUpResponseDto createUser = userService.createUser(requestDto);
         return ResponseEntity.ok(createUser);
+    }
+
+    @PostMapping("/api/login")
+    public ResponseEntity<UserLoginResponseDto> login(@RequestBody @Valid UserLoginRequestDto loginRequestDto) {
+        UserLoginResponseDto responseDto = userService.login(loginRequestDto);
+        return ResponseEntity.ok(responseDto);
     }
 }

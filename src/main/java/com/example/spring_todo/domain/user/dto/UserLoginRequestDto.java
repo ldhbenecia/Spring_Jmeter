@@ -1,4 +1,4 @@
-package com.example.spring_todo.global.auth.dto;
+package com.example.spring_todo.domain.user.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class LoginRequestDto {
+public class UserLoginRequestDto {
 
     @NotBlank
     private String email;
