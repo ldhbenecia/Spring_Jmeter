@@ -7,9 +7,7 @@ import com.example.spring_todo.domain.todo.dto.TodoResponseDto;
 import com.example.spring_todo.domain.todo.repository.TodoRepository;
 import com.example.spring_todo.domain.user.domain.User;
 import com.example.spring_todo.domain.user.repository.UserRepository;
-import com.example.spring_todo.global.auth.service.PrincipalDetails;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -94,7 +92,6 @@ public class TodoService {
         Todo todo = todoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Todo Not Found"));
 
-        // 투두를 소유한 사용자인지 확인
         if (!todo.getUser().getId().equals(currentUserId)) {
             throw new RuntimeException("해당 투두를 업데이트할 권한이 없습니다.");
         }
@@ -123,7 +120,6 @@ public class TodoService {
         Todo todo = todoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Todo Not Found"));
 
-        // 투두를 소유한 사용자인지 확인
         if (!todo.getUser().getId().equals(currentUserId)) {
             throw new RuntimeException("해당 투두를 업데이트할 권한이 없습니다.");
         }

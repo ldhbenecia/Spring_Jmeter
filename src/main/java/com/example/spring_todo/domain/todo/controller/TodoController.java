@@ -3,6 +3,7 @@ package com.example.spring_todo.domain.todo.controller;
 import com.example.spring_todo.domain.todo.dto.TodoDto;
 import com.example.spring_todo.domain.todo.dto.TodoRequestDto;
 import com.example.spring_todo.domain.todo.dto.TodoResponseDto;
+import com.example.spring_todo.domain.todo.service.TodoLikeService;
 import com.example.spring_todo.domain.todo.service.TodoService;
 import com.example.spring_todo.global.auth.service.PrincipalDetails;
 import jakarta.validation.Valid;
@@ -18,6 +19,7 @@ import java.util.List;
 public class TodoController {
 
     private final TodoService todoService;
+    private final TodoLikeService todoLikeService;
 
     /**
      * 전역 Todo 조회
@@ -93,5 +95,19 @@ public class TodoController {
         Long currentUserId = principalDetails.getId();
         todoService.deleteTodoV2(id, currentUserId);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/api/v1/{id}/like")
+    public ResponseEntity<Void> likeTodo(@PathVariable("id") Long id, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+        Long currentUserId = principalDetails.getId();
+        todoLikeService.likeTodo(id, currentUserId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/api/v1/{id}/unlike")
+    public ResponseEntity<Void> unlikeTodo(@PathVariable("id") Long id, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+        Long currentUserId = principalDetails.getId();
+        todoLikeService.unlikeTodo(id, currentUserId);
+        return ResponseEntity.ok().build();
     }
 }

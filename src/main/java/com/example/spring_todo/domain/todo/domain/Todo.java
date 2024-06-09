@@ -43,6 +43,10 @@ public class Todo {
         this.likes++;
     }
 
+    public void decrementLikes() {
+        this.likes--;
+    }
+
     public void toggleCompleted() {
         this.isCompleted = !this.isCompleted;
     }
