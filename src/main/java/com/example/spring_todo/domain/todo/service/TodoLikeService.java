@@ -4,6 +4,7 @@ import com.example.spring_todo.domain.todo.domain.Todo;
 import com.example.spring_todo.domain.todo.domain.TodoLike;
 import com.example.spring_todo.domain.todo.repository.TodoLikeRepository;
 import com.example.spring_todo.domain.todo.repository.TodoRepository;
+import com.example.spring_todo.domain.user.domain.User;
 import com.example.spring_todo.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,9 @@ public class TodoLikeService {
 
     @Transactional
     public void likeTodo(Long id, Long currentUserId) {
+        User currentUser = userRepository.findById(currentUserId)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+
         Todo todo = todoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Todo not found"));
 
@@ -29,20 +33,23 @@ public class TodoLikeService {
 
         TodoLike todoLike = new TodoLike();
         todoLike.setTodo(todo);
-        todoLike.setUser(userRepository.findById(currentUserId)
-                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다.")));
+        todoLike.setUser(currentUser);
         todoLikeRepository.save(todoLike);
 
         todo.incrementLikes();
-        todoLikeRepository.save(todoLike);
+        todoRepository.save(todo);
     }
 
     @Transactional
     public void unlikeTodo(Long id, Long currentUserId) {
-        todoLikeRepository.deleteByTodoIdAndUserId(id, currentUserId);
-
         Todo todo = todoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Todo not found"));
+
+        TodoLike todoLike = todoLikeRepository.findByTodoIdAndUserId(id, currentUserId)
+                .orElseThrow(() -> new RuntimeException("좋아요 기록을 찾을 수 없습니다."));
+
+        todoLikeRepository.delete(todoLike);
+
         todo.decrementLikes();
         todoRepository.save(todo);
     }
