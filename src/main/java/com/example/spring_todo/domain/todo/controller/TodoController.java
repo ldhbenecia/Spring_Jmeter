@@ -4,8 +4,11 @@ import com.example.spring_todo.domain.todo.dto.TodoDto;
 import com.example.spring_todo.domain.todo.dto.TodoRequestDto;
 import com.example.spring_todo.domain.todo.dto.TodoResponseDto;
 import com.example.spring_todo.domain.todo.service.TodoService;
+import com.example.spring_todo.global.auth.service.PrincipalDetails;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,38 +19,79 @@ public class TodoController {
 
     private final TodoService todoService;
 
-    @GetMapping("/api/todos")
+    /**
+     * 전역 Todo 조회
+     */
+    @GetMapping("/api/v1/todo")
     public ResponseEntity<List<TodoDto>> getAllTodos() {
         List<TodoDto> todos = todoService.getAllTodos();
         return ResponseEntity.ok(todos);
     }
 
-    @PostMapping("/api/todo")
-    public ResponseEntity<TodoResponseDto> createTodo(@RequestBody TodoRequestDto requestDto) {
-        TodoResponseDto createdTodo = todoService.createTodo(requestDto);
+    /**
+     * 현재 사용자 Todo 조회
+     */
+    @GetMapping("/api/v2/todo")
+    public ResponseEntity<List<TodoDto>> getTodosByCurrentUser(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+        Long currentUserId = principalDetails.getId();
+        List<TodoDto> todos = todoService.getTodosByCurrentUser(currentUserId);
+        return ResponseEntity.ok(todos);
+    }
+
+    /**
+     * 전역 Todo 작성
+     */
+    @PostMapping("/api/v1/todo")
+    public ResponseEntity<TodoResponseDto> createTodoV1(@RequestBody TodoRequestDto requestDto) {
+        TodoResponseDto createdTodo = todoService.createTodoV1(requestDto);
         return ResponseEntity.ok(createdTodo);
     }
 
-    @PutMapping("/api/todo/{id}")
-    public ResponseEntity<TodoResponseDto> updateTodo(@PathVariable("id") Long id, @RequestBody TodoRequestDto requestDto) {
-        TodoResponseDto updatedTodo = todoService.updateTodo(id, requestDto);
+    /**
+     * 현재 사용자 Todo 작성
+     */
+    @PostMapping("/api/v2/todo")
+    public ResponseEntity<TodoResponseDto> createTodoV2(@RequestBody @Valid TodoRequestDto requestDto, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+        Long currentUserId = principalDetails.getId();
+        TodoResponseDto createdTodo = todoService.createTodoV2(requestDto, currentUserId);
+        return ResponseEntity.ok(createdTodo);
+    }
+
+    /**
+     * 전역 Todo 수정
+     */
+    @PutMapping("/api/v1/todo/{id}")
+    public ResponseEntity<TodoResponseDto> updateTodoV1(@PathVariable("id") Long id, @RequestBody TodoRequestDto requestDto) {
+        TodoResponseDto updatedTodo = todoService.updateTodoV1(id, requestDto);
         return ResponseEntity.ok(updatedTodo);
     }
 
-    @DeleteMapping("/api/todo/{id}")
-    public ResponseEntity<Void> deleteTodo(@PathVariable("id") Long id) {
-        todoService.deleteTodo(id);
+    /**
+     * 현재 사용자 Todo 수정
+     */
+    @PutMapping("/api/v2/todo/{id}")
+    public ResponseEntity<TodoResponseDto> updateTodoV2(@PathVariable("id") Long id, @RequestBody TodoRequestDto requestDto, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+        Long currentUserId = principalDetails.getId();
+        TodoResponseDto updatedTodo = todoService.updateTodoV2(id, requestDto, currentUserId);
+        return ResponseEntity.ok(updatedTodo);
+    }
+
+    /**
+     * 전역 Todo 삭제
+     */
+    @DeleteMapping("/api/v1/todo/{id}")
+    public ResponseEntity<Void> deleteTodoV1(@PathVariable("id") Long id) {
+        todoService.deleteTodoV1(id);
         return ResponseEntity.noContent().build();
     }
 
     /**
-     * Redis 캐싱 사용 x
-     * @param id
+     * 현재 사용자 Todo 삭제
      */
-    @PostMapping("/api/{id}/like")
-    public ResponseEntity<Void> incrementLikesNoCaching(@PathVariable Long id) {
-        todoService.incrementLikesNoCaching(id);
-        return ResponseEntity.ok().build();
+    @DeleteMapping("/api/v2/todo/{id}")
+    public ResponseEntity<Void> deleteTodoV2(@PathVariable("id") Long id, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+        Long currentUserId = principalDetails.getId();
+        todoService.deleteTodoV2(id, currentUserId);
+        return ResponseEntity.noContent().build();
     }
-
 }
