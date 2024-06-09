@@ -1,7 +1,11 @@
 package com.example.spring_todo.domain.user.domain;
 
+import com.example.spring_todo.domain.todo.domain.Todo;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -23,6 +27,9 @@ public class User {
 
     @Column(nullable = false)
     private String password;
+
+    @OneToMany(mappedBy = "user")
+    List<Todo> todos = new ArrayList<>();
 
     public User(String email, String nickname, String password) {
         this.email = email;
