@@ -30,3 +30,15 @@
 |-----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | BackEnd   | <img src="https://img.shields.io/badge/Java-007396?logo=openjdk&logoColor=white"/>  <img src="https://img.shields.io/badge/SpringBoot-6DB33F?logo=springboot&logoColor=white"/> <img src="https://img.shields.io/badge/Spring Security-6DB33F?logo=springsecurity&logoColor=white"/> <img src="https://img.shields.io/badge/H2-3D03A7?logo=databricks&logoColor=white"/> <img src="https://img.shields.io/badge/Redis-FF4438?logo=redis&logoColor=white"/> |
 | Test Tool | <img src="https://img.shields.io/badge/junit5-25A162?logo=junit5&logoColor=white"/> <img src="https://img.shields.io/badge/Apache Jmeter-D22128?logo=apachejmeter&logoColor=white"/>                                                                                                                                                                                                                                                                      |
+
+<br />
+
+## 진행 상황
+- [x] TODO 기초 CRUD 구현
+- [x] Spring Security를 사용하여 자체 로그인 구현
+- [x] Security 기반 API 구현
+- [x] 전역 Exception 처리
+- [x] Todo 테스트 코드 작성
+- [x] Jmeter를 사용하여 부하테스트 진행
+- [ ] Redis를 사용하여 동시성 문제 해결
+- [ ] Redis를 사용하여 좋아요 캐싱 후 DB 반영 구현
