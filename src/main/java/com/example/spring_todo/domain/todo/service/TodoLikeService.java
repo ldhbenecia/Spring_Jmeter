@@ -6,6 +6,8 @@ import com.example.spring_todo.domain.todo.repository.TodoLikeRepository;
 import com.example.spring_todo.domain.todo.repository.TodoRepository;
 import com.example.spring_todo.domain.user.domain.User;
 import com.example.spring_todo.domain.user.repository.UserRepository;
+import com.example.spring_todo.global.exception.CustomErrorException;
+import com.example.spring_todo.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,14 +23,14 @@ public class TodoLikeService {
     @Transactional
     public void likeTodo(Long id, Long currentUserId) {
         User currentUser = userRepository.findById(currentUserId)
-                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomErrorException(ErrorCode.NOT_FOUND_USER));
 
         Todo todo = todoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Todo not found"));
+                .orElseThrow(() -> new CustomErrorException(ErrorCode.NOT_FOUND_TODO));
 
         boolean alreadyLiked = todoLikeRepository.existsByTodoIdAndUserId(id, currentUserId);
         if (alreadyLiked) {
-            throw new RuntimeException("이미 좋아요를 눌렀습니다.");
+            throw new CustomErrorException(ErrorCode.ALREADY_LIKED);
         }
 
         TodoLike todoLike = new TodoLike();
@@ -43,10 +45,10 @@ public class TodoLikeService {
     @Transactional
     public void unlikeTodo(Long id, Long currentUserId) {
         Todo todo = todoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Todo not found"));
+                .orElseThrow(() -> new CustomErrorException(ErrorCode.NOT_FOUND_TODO));
 
         TodoLike todoLike = todoLikeRepository.findByTodoIdAndUserId(id, currentUserId)
-                .orElseThrow(() -> new RuntimeException("좋아요 기록을 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomErrorException(ErrorCode.NOT_FOUND_TODO_LIKE));
 
         todoLikeRepository.delete(todoLike);
 

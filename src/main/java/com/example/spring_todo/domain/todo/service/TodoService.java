@@ -7,6 +7,8 @@ import com.example.spring_todo.domain.todo.dto.TodoResponseDto;
 import com.example.spring_todo.domain.todo.repository.TodoRepository;
 import com.example.spring_todo.domain.user.domain.User;
 import com.example.spring_todo.domain.user.repository.UserRepository;
+import com.example.spring_todo.global.exception.CustomErrorException;
+import com.example.spring_todo.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,7 +57,7 @@ public class TodoService {
     @Transactional
     public TodoResponseDto createTodoV2(TodoRequestDto requestDto, Long currentUserId) {
         User currentUser = userRepository.findById(currentUserId)
-                .orElseThrow(() -> new RuntimeException("현재 사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomErrorException(ErrorCode.NOT_FOUND_USER));
 
         Todo todo = new Todo();
         todo.setContents(requestDto.getContents());
@@ -74,7 +76,7 @@ public class TodoService {
     @Transactional
     public TodoResponseDto updateTodoV1(Long id, TodoRequestDto requestDto) {
         Todo todo = todoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Todo Not Found"));
+                .orElseThrow(() -> new CustomErrorException(ErrorCode.NOT_FOUND_TODO));
         todo.setContents(requestDto.getContents());
 
         Todo saveTodo = todoRepository.save(todo);
@@ -90,10 +92,10 @@ public class TodoService {
     @Transactional
     public TodoResponseDto updateTodoV2(Long id, TodoRequestDto requestDto, Long currentUserId) {
         Todo todo = todoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Todo Not Found"));
+                .orElseThrow(() -> new CustomErrorException(ErrorCode.NOT_FOUND_TODO));
 
         if (!todo.getUser().getId().equals(currentUserId)) {
-            throw new RuntimeException("해당 투두를 업데이트할 권한이 없습니다.");
+            throw new CustomErrorException(ErrorCode.UNAUTHORIZED_UPDATE_TODO);
         }
 
         todo.setContents(requestDto.getContents());
@@ -110,7 +112,7 @@ public class TodoService {
     @Transactional
     public void deleteTodoV1(Long id) {
         if (!todoRepository.existsById(id)) {
-            throw new RuntimeException("Todo Not Found");
+            throw new CustomErrorException(ErrorCode.NOT_FOUND_TODO);
         }
         todoRepository.deleteById(id);
     }
@@ -118,10 +120,10 @@ public class TodoService {
     @Transactional
     public void deleteTodoV2(Long id, Long currentUserId) {
         Todo todo = todoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Todo Not Found"));
+                .orElseThrow(() -> new CustomErrorException(ErrorCode.NOT_FOUND_TODO));
 
         if (!todo.getUser().getId().equals(currentUserId)) {
-            throw new RuntimeException("해당 투두를 업데이트할 권한이 없습니다.");
+            throw new CustomErrorException(ErrorCode.UNAUTHORIZED_UPDATE_TODO);
         }
 
         todoRepository.deleteById(id);
