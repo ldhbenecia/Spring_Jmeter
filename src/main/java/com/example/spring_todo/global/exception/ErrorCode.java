@@ -18,6 +18,7 @@ public enum ErrorCode {
     UNAUTHORIZED_UPDATE_TODO(401, "TODO를 업데이트할 권한이 없습니다."),
     ALREADY_LIKED(403, "이미 좋아요를 누른 TODO입니다"),
     NOT_FOUND_TODO_LIKE(404, "해당 TODO의 좋아요 기록을 찾을 수 없습니다."),
+    CAN_NOT_USE_LOCK(500, "Redisson Lock을 사용할 수 없습니다."),
 
     // User
     NOT_FOUND_USER(404, "현재 로그인한 사용자를 찾을 수 없습니다."),
