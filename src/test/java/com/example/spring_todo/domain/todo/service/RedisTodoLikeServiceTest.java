@@ -70,7 +70,7 @@ class RedisTodoLikeServiceTest {
             executorService.execute(() -> {
                 try {
                     if (currentUser != null) {
-                        redisTodoLikeService.likeTodo(testTodo.getId(), currentUser.getId());
+                        redisTodoLikeService.likeTodoWithLock(testTodo.getId(), currentUser.getId());
                     } else {
                         System.out.println("User not found: " + user.getId());
                     }
