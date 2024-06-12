@@ -40,5 +40,12 @@
 - [x] 전역 Exception 처리
 - [x] Todo 테스트 코드 작성
 - [x] Jmeter를 사용하여 부하테스트 진행
-- [ ] Redis를 사용하여 동시성 문제 해결
+- [x] Redis를 사용하여 동시성 문제 해결
 - [ ] Redis를 사용하여 좋아요 캐싱 후 DB 반영 구현
+
+<br />
+
+## TPS
+
+### 동시성 문제 해결 후 첫 TPS (60까지 처리)
+![first_tps.png](docs%2Fasset%2Ffirst_tps.png)
