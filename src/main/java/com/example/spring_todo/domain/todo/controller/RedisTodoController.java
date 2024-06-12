@@ -18,7 +18,7 @@ public class RedisTodoController {
     @PostMapping("/api/v2/{id}/like")
     public ResponseEntity<Void> likeTodo(@PathVariable("id") Long id, @AuthenticationPrincipal PrincipalDetails principalDetails) {
         Long currentUserId = principalDetails.getId();
-        redisTodoLikeService.likeTodo(id, currentUserId);
+        redisTodoLikeService.likeTodoWithLock(id, currentUserId);
         return ResponseEntity.ok().build();
     }
 }

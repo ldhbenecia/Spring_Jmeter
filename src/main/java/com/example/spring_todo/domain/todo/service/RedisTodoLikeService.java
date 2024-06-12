@@ -19,17 +19,15 @@ import java.util.concurrent.TimeUnit;
 @Service
 @RequiredArgsConstructor
 public class RedisTodoLikeService {
+
     private final TodoRepository todoRepository;
     private final UserRepository userRepository;
     private final TodoLikeRepository todoLikeRepository;
     private final RedissonClient redissonClient;
 
-    @Transactional
-    public void likeTodo(Long id, Long currentUserId) {
+    public void likeTodoWithLock(Long id, Long currentUserId) {
         String lockKey = "todo-likes-lock-" + id;
         RLock rLock = redissonClient.getLock(lockKey);
-
-        System.out.println("현재 아이디"+ currentUserId);
 
         try {
             boolean available = rLock.tryLock(10, 1, TimeUnit.SECONDS);
@@ -38,29 +36,36 @@ public class RedisTodoLikeService {
             }
 
             try {
-                User currentUser = userRepository.findById(currentUserId)
-                        .orElseThrow(() -> new CustomErrorException(ErrorCode.NOT_FOUND_USER));
-                Todo todo = todoRepository.findById(id)
-                        .orElseThrow(() -> new CustomErrorException(ErrorCode.NOT_FOUND_TODO));
-
-                boolean alreadyLiked = todoLikeRepository.existsByTodoIdAndUserId(id, currentUserId);
-                if (alreadyLiked) {
-                    throw new CustomErrorException(ErrorCode.ALREADY_LIKED);
-                }
-
-                TodoLike todoLike = new TodoLike();
-                todoLike.setTodo(todo);
-                todoLike.setUser(currentUser);
-                todoLikeRepository.save(todoLike);
-
-                todo.incrementLikes();
-                todoRepository.save(todo);
+                likeTodoTransactional(id, currentUserId);
             } finally {
-                rLock.unlock();
+                if (rLock.isHeldByCurrentThread()) {
+                    rLock.unlock();
+                }
             }
 
         } catch (InterruptedException e) {
             throw new CustomErrorException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @Transactional
+    public void likeTodoTransactional(Long id, Long currentUserId) {
+        User currentUser = userRepository.findById(currentUserId)
+                .orElseThrow(() -> new CustomErrorException(ErrorCode.NOT_FOUND_USER));
+        Todo todo = todoRepository.findById(id)
+                .orElseThrow(() -> new CustomErrorException(ErrorCode.NOT_FOUND_TODO));
+
+        boolean alreadyLiked = todoLikeRepository.existsByTodoIdAndUserId(id, currentUserId);
+        if (alreadyLiked) {
+            throw new CustomErrorException(ErrorCode.ALREADY_LIKED);
+        }
+
+        TodoLike todoLike = new TodoLike();
+        todoLike.setTodo(todo);
+        todoLike.setUser(currentUser);
+        todoLikeRepository.save(todoLike);
+
+        todo.incrementLikes();
+        todoRepository.save(todo);
     }
 }
